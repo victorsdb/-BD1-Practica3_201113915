@@ -49,7 +49,17 @@ BEGIN;
 		nombre_actor            VARCHAR(50),
 		apellido_actor          VARCHAR(50)
 	);
-
-	COPY registro FROM '/home/victorsdb/Documentos/GitHub/-BD1-Practica3_201113915/[BD1]Practica3_201113915/BlockbusterData.csv' DELIMITER ';' NULL '-' CSV HEADER;
+	
+	/*
+	COPY registro 
+		FROM '/home/victorsdb/Documentos/GitHub/-BD1-Practica3_201113915/[BD1]Practica3_201113915/BlockbusterData.csv' 
+			DELIMITER ';' NULL '-' 
+				CSV HEADER;
+	*/
+	
+	COPY registro 
+		FROM 'C:\Users\victo\Documents\GitHub\-BD1-Practica3_201113915\[BD1]Practica3_201113915\BlockbusterData.csv' 
+			DELIMITER ';' NULL '-' 
+				CSV HEADER;
 	
 COMMIT;

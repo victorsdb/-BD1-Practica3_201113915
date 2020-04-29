@@ -77,12 +77,21 @@ BEGIN;
 -- ======================================================================================
 -- Carga de datos de la tabla CLIENTE
 -- ======================================================================================
-	INSERT INTO cliente(nombre_cliente, apellido_cliente, correo_cliente, cliente_activo, fecha_creacion_cliente, tienda_preferida_cliente, direccion_cliente)
-		SELECT DISTINCT nombre_cliente, apellido_cliente, correo_cliente, (CASE WHEN UPPER(empleado_activo)='SI'  THEN true WHEN UPPER(empleado_activo)='NO' THEN false END) as actividad, fecha_creacion, id_tienda, id_direccion
+	INSERT INTO cliente(nombre_cliente, apellido_cliente, correo_cliente, 
+						cliente_activo, fecha_creacion_cliente, 
+						tienda_preferida_cliente, direccion_cliente
+					   )
+		SELECT DISTINCT nombre_cliente, apellido_cliente, correo_cliente, 
+				(
+					CASE 
+						WHEN UPPER(empleado_activo)='SI'  THEN true 
+						WHEN UPPER(empleado_activo)='NO' THEN false 
+					END
+				) as actividad, 
+				fecha_creacion, id_tienda, id_direccion
 			FROM registro 
 				INNER JOIN tienda ON tienda.nombre_tienda = tienda_preferida
 				INNER JOIN direccion ON direccion.direccion = direccion_cliente
-				--INNER JOIN activo ON espaniol = UPPER(cliente_activo)
 					WHERE nombre_cliente IS NOT null AND apellido_cliente IS NOT null
 					ORDER BY nombre_cliente;
 -- ======================================================================================
