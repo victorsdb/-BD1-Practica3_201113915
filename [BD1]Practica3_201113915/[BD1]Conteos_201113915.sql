@@ -30,10 +30,8 @@ SELECT 14 AS indice, 'lenguaje_pelicula' AS tabla , COUNT(*) AS cantidad_filas  
 UNION
 SELECT 15 AS indice, 'categoria_pelicula' AS tabla , COUNT(*) AS cantidad_filas  FROM categoria_pelicula
 UNION
-SELECT 16 AS indice, 'copia_pelicula' AS tabla , COUNT(*) AS cantidad_filas  FROM copia_pelicula
+SELECT 16 AS indice, 'renta_pelicula' AS tabla , COUNT(*) AS cantidad_filas  FROM renta_pelicula
 UNION
-SELECT 17 AS indice, 'renta_pelicula' AS tabla , COUNT(*) AS cantidad_filas  FROM renta_pelicula
-UNION
-SELECT 18 AS indice, 'pago_renta' AS tabla , COUNT(*) AS cantidad_filas  FROM pago_renta
+SELECT 17 AS indice, 'pago_renta' AS tabla , COUNT(*) AS cantidad_filas  FROM pago_renta
 	ORDER BY indice	;
 

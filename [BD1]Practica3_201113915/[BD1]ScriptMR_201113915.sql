@@ -29,6 +29,9 @@ BEGIN;
 		nombre_pais  VARCHAR(50) NOT NULL
 	);
 
+	ALTER TABLE pais
+		ADD CONSTRAINT pais_un UNIQUE (nombre_pais);
+
 	ALTER TABLE pais 
 		ADD CONSTRAINT pais_pk PRIMARY KEY ( id_pais );
 -- ======================================================================================
@@ -42,6 +45,9 @@ BEGIN;
 
 	ALTER TABLE ciudad 
 		ADD CONSTRAINT ciudad_pk PRIMARY KEY ( id_ciudad );
+	
+	ALTER TABLE ciudad
+		ADD CONSTRAINT ciudad_un UNIQUE (nombre_ciudad, pais_ciudad);
 
 	ALTER TABLE ciudad
 		ADD CONSTRAINT pais_ciudad_fk FOREIGN KEY ( pais_ciudad )
@@ -58,6 +64,12 @@ BEGIN;
 
 	ALTER TABLE direccion 
 		ADD CONSTRAINT direccion_pk PRIMARY KEY ( id_direccion );
+	
+	ALTER TABLE direccion
+		ADD CONSTRAINT direccion_un UNIQUE (direccion, codigo_postal, ciudad_direccion);
+	
+	ALTER TABLE pais
+		ADD CONSTRAINT pais_uk UNIQUE (nombre_pais);
 
 	ALTER TABLE direccion
 		ADD CONSTRAINT ciudad_direccion_fk FOREIGN KEY ( ciudad_direccion )
@@ -74,6 +86,9 @@ BEGIN;
 	ALTER TABLE tienda 
 		ADD CONSTRAINT tienda_pk PRIMARY KEY ( id_tienda );
 
+	ALTER TABLE tienda
+		ADD CONSTRAINT tienda_un UNIQUE (nombre_tienda, direccion_tienda);
+		
 	ALTER TABLE tienda
 		ADD CONSTRAINT direccion_tienda_fk FOREIGN KEY ( direccion_tienda )
 			REFERENCES direccion ( id_direccion );
@@ -94,6 +109,9 @@ BEGIN;
 
 	ALTER TABLE empleado 
 		ADD CONSTRAINT empleado_pk PRIMARY KEY ( id_empleado );
+		
+	ALTER TABLE empleado
+		ADD CONSTRAINT empleado_un UNIQUE (usuario_empleado);
 
 	ALTER TABLE empleado
 		ADD CONSTRAINT direccion_empleado_fk FOREIGN KEY ( direccion_empleado )
@@ -111,7 +129,7 @@ BEGIN;
 	);
 	
 	ALTER TABLE encargado_tienda 
-		ADD CONSTRAINT encargado_tienda_pk PRIMARY KEY ( tienda );
+		ADD CONSTRAINT encargado_tienda_pk PRIMARY KEY ( tienda, empleado);
 
 	ALTER TABLE encargado_tienda
 		ADD CONSTRAINT encargado_tienda_tienda_fk FOREIGN KEY ( tienda )
@@ -136,7 +154,7 @@ BEGIN;
 
 	ALTER TABLE cliente 
 		ADD CONSTRAINT cliente_pk PRIMARY KEY ( id_cliente );
-
+		
 	ALTER TABLE cliente
 		ADD CONSTRAINT direccion_cliente_fk FOREIGN KEY ( direccion_cliente )
 			REFERENCES direccion ( id_direccion );
@@ -165,6 +183,9 @@ BEGIN;
 
 	ALTER TABLE lenguaje 
 		ADD CONSTRAINT clasificacionv1_pk PRIMARY KEY ( id_lenguaje );
+		
+	ALTER TABLE lenguaje
+		ADD CONSTRAINT lenguaje_un UNIQUE (nombre_lenguaje);
 -- ======================================================================================
 -- Creación de la tabla CATEGORIA
 -- ======================================================================================
@@ -175,6 +196,9 @@ BEGIN;
 
 	ALTER TABLE categoria 
 		ADD CONSTRAINT categoria_pk PRIMARY KEY ( id_categoria );
+	
+	ALTER TABLE categoria
+		ADD CONSTRAINT categoria_un UNIQUE (nombre_categoria);
 -- ======================================================================================
 -- Creación de la tabla CLASIFICACION
 -- ======================================================================================
@@ -185,6 +209,9 @@ BEGIN;
 
 	ALTER TABLE clasificacion 
 		ADD CONSTRAINT clasificacion_pk PRIMARY KEY ( id_clasificacion );
+		
+	ALTER TABLE clasificacion
+		ADD CONSTRAINT clasificacion_un UNIQUE (nombre_clasificacion);
 -- ======================================================================================
 -- Creación de la tabla PELICULA
 -- ======================================================================================
@@ -202,6 +229,9 @@ BEGIN;
 
 	ALTER TABLE pelicula 
 		ADD CONSTRAINT pelicula_pk PRIMARY KEY ( id_pelicula );
+	
+	ALTER TABLE pelicula
+		ADD CONSTRAINT pelicula_un UNIQUE (nombre_pelicula, descripcion_pelicula, anio_lanzamiento, duracion_minutos, clasificacion_pelicula);
 
 	ALTER TABLE pelicula
 		ADD CONSTRAINT clasificacion_pelicula_fk FOREIGN KEY ( clasificacion_pelicula )
@@ -215,11 +245,14 @@ BEGIN;
 	);
 
 	ALTER TABLE actor_pelicula
-		ADD CONSTRAINT actor_pelicula_fk2 FOREIGN KEY ( pelicula )
+		ADD CONSTRAINT actor_pelicula_fk PRIMARY KEY(pelicula, actor);
+		
+	ALTER TABLE actor_pelicula
+		ADD CONSTRAINT actor_pelicula_fk1 FOREIGN KEY ( pelicula )
 			REFERENCES pelicula ( id_pelicula );
 			
 	ALTER TABLE actor_pelicula
-		ADD CONSTRAINT actor_pelicula_fk1 FOREIGN KEY ( actor )
+		ADD CONSTRAINT actor_pelicula_fk2 FOREIGN KEY ( actor )
 			REFERENCES actor ( id_actor );
 -- ======================================================================================
 -- Creación de la tabla LENGUAJE_PELICULA
@@ -230,11 +263,14 @@ BEGIN;
 	);
 
 	ALTER TABLE lenguaje_pelicula
-		ADD CONSTRAINT lenguaje_pelicula_fk2 FOREIGN KEY ( pelicula )
+		ADD CONSTRAINT lenguaje_pelicula_fk PRIMARY KEY(pelicula, lenguaje);
+
+	ALTER TABLE lenguaje_pelicula
+		ADD CONSTRAINT lenguaje_pelicula_fk1 FOREIGN KEY ( pelicula )
 			REFERENCES pelicula ( id_pelicula );
 			
 	ALTER TABLE lenguaje_pelicula
-		ADD CONSTRAINT lenguaje_pelicula_fk1 FOREIGN KEY ( lenguaje )
+		ADD CONSTRAINT lenguaje_pelicula_fk2 FOREIGN KEY ( lenguaje )
 			REFERENCES lenguaje ( id_lenguaje );
 -- ======================================================================================
 -- Creación de la tabla CATEGORIA_PELICULA
@@ -245,38 +281,23 @@ BEGIN;
 	);
 
 	ALTER TABLE categoria_pelicula
-		ADD CONSTRAINT categoria_pelicula_fk2 FOREIGN KEY ( pelicula )
+		ADD CONSTRAINT categoria_pelicula_fk PRIMARY KEY(pelicula, categoria);
+
+	ALTER TABLE categoria_pelicula
+		ADD CONSTRAINT categoria_pelicula_fk1 FOREIGN KEY ( pelicula )
 			REFERENCES pelicula ( id_pelicula );
 			
 	ALTER TABLE categoria_pelicula
-		ADD CONSTRAINT categoria_pelicula_fk1 FOREIGN KEY ( categoria )
+		ADD CONSTRAINT categoria_pelicula_fk2 FOREIGN KEY ( categoria )
 			REFERENCES categoria ( id_categoria );
--- ======================================================================================
--- Creación de la tabla COPIA_PELICULA
--- ======================================================================================
-	CREATE TABLE copia_pelicula (
-		id_copia_pelicula  SERIAL NOT NULL,
-		pelicula           INTEGER NOT NULL,
-		tienda             INTEGER NOT NULL
-	);
-
-	ALTER TABLE copia_pelicula 
-		ADD CONSTRAINT copia_pelicula_pk PRIMARY KEY ( id_copia_pelicula );
-
-	ALTER TABLE copia_pelicula
-		ADD CONSTRAINT copia_pelicula_pelicula_fk FOREIGN KEY ( pelicula )
-			REFERENCES pelicula ( id_pelicula );
-
-	ALTER TABLE copia_pelicula
-		ADD CONSTRAINT copia_pelicula_tienda_fk FOREIGN KEY ( tienda )
-			REFERENCES tienda ( id_tienda );
 -- ======================================================================================
 -- Creación de la tabla RENTA_PELICULA
 -- ======================================================================================
 	CREATE TABLE renta_pelicula (
 		id_renta_pelicula     SERIAL NOT NULL,
 		cliente_renta         INTEGER NOT NULL,
-		copia_pelicula_renta  INTEGER NOT NULL,
+		tienda_renta  		  INTEGER NOT NULL,
+		pelicula_renta  	  INTEGER NOT NULL,
 		empleado_renta        INTEGER NOT NULL,
 		fecha_renta           TIMESTAMP NOT NULL,
 		fecha_retorno         TIMESTAMP
@@ -288,10 +309,14 @@ BEGIN;
 	ALTER TABLE renta_pelicula
 		ADD CONSTRAINT renta_pelicula_cliente_fk FOREIGN KEY ( cliente_renta )
 			REFERENCES cliente ( id_cliente );
-
+			
 	ALTER TABLE renta_pelicula
-		ADD CONSTRAINT renta_pelicula_pelicula_fk FOREIGN KEY ( copia_pelicula_renta )
-			REFERENCES copia_pelicula ( id_copia_pelicula );
+		ADD CONSTRAINT renta_pelicula_tienda_fk FOREIGN KEY ( tienda_renta )
+			REFERENCES tienda ( id_tienda );
+			
+	ALTER TABLE renta_pelicula
+		ADD CONSTRAINT renta_pelicula_pelicula_fk FOREIGN KEY ( pelicula_renta )
+			REFERENCES pelicula ( id_pelicula );
 
 	ALTER TABLE renta_pelicula
 		ADD CONSTRAINT renta_pelicula_empleado_fk FOREIGN KEY ( empleado_renta )
@@ -300,10 +325,14 @@ BEGIN;
 -- Creación de la tabla PAGO_RENTA
 -- ======================================================================================
 	CREATE TABLE pago_renta (
-		renta       INTEGER NOT NULL,
-		monto_pago  REAL,
+		id_pago_renta	SERIAL NOT NULL,
+		renta       	INTEGER NOT NULL,
+		monto_pago  	REAL,
 		fecha_pago  TIMESTAMP
 	);
+
+	ALTER TABLE pago_renta 
+		ADD CONSTRAINT pago_renta_pk PRIMARY KEY ( id_pago_renta );
 
 	ALTER TABLE pago_renta
 		ADD CONSTRAINT pago_renta_renta_pelicula_fk FOREIGN KEY ( renta )

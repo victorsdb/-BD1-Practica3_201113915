@@ -17,7 +17,6 @@ BEGIN;
 	TRUNCATE TABLE actor_pelicula CASCADE;
 	TRUNCATE TABLE lenguaje_pelicula CASCADE;
 	TRUNCATE TABLE categoria_pelicula CASCADE;
-	TRUNCATE TABLE copia_pelicula CASCADE;
 	TRUNCATE TABLE renta_pelicula CASCADE;
 	TRUNCATE TABLE pago_renta CASCADE;
 -- ======================================================================================
@@ -185,7 +184,7 @@ BEGIN;
 			ON lenguaje.nombre_lenguaje = registro.lenguaje_pelicula
 		INNER JOIN pelicula 
 			ON pelicula.nombre_pelicula = registro.nombre_pelicula
-			ORDER BY id_pelicula;
+				ORDER BY id_pelicula;
 -- ======================================================================================
 -- Carga de datos de la tabla CATEGORIA_PELICULA
 -- ======================================================================================
@@ -196,26 +195,14 @@ BEGIN;
 			ON categoria.nombre_categoria = registro.categoria_pelicula
 		INNER JOIN pelicula 
 			ON pelicula.nombre_pelicula = registro.nombre_pelicula
-			ORDER BY id_pelicula;
--- ======================================================================================
--- Carga de datos de la tabla COPIA_PELICULA
--- ======================================================================================
-	INSERT INTO copia_pelicula(pelicula, tienda)
-	SELECT DISTINCT id_pelicula, id_tienda
-		FROM registro
-		INNER JOIN pelicula 
-			ON pelicula.nombre_pelicula = registro.nombre_pelicula
-		INNER JOIN tienda 
-			ON tienda.nombre_tienda = tienda_pelicula
-				WHERE registro.nombre_pelicula IS NOT null AND tienda_pelicula IS NOT null
-					ORDER BY id_pelicula;
+				ORDER BY id_pelicula;
 -- ======================================================================================
 -- Carga de datos de la tabla RENTA_PELICULA
 -- ======================================================================================
-	INSERT INTO renta_pelicula(cliente_renta, copia_pelicula_renta, empleado_renta, 
-							   fecha_renta, fecha_retorno
+	INSERT INTO renta_pelicula(cliente_renta, tienda_renta, pelicula_renta, 
+							   empleado_renta, fecha_renta, fecha_retorno
 							  )
-		SELECT DISTINCT id_cliente, id_copia_pelicula, id_empleado, fecha_renta, 
+		SELECT DISTINCT id_cliente, id_tienda, id_pelicula, id_empleado, fecha_renta, 
 						fecha_retorno
 			FROM registro	
 			INNER JOIN cliente 
@@ -228,11 +215,7 @@ BEGIN;
 			INNER JOIN empleado 
 				ON empleado.nombre_empleado = registro.nombre_empleado 
 				AND empleado.apellido_empleado = registro.apellido_empleado
-			INNER JOIN copia_pelicula 
-				ON copia_pelicula.pelicula = id_pelicula 
-				AND copia_pelicula.tienda = id_tienda
-					WHERE fecha_renta IS NOT null
-						ORDER BY id_copia_pelicula ASC;
+					WHERE fecha_renta IS NOT null;
 -- ======================================================================================
 -- Carga de datos de la tabla PAGO_RENTA
 -- ======================================================================================
@@ -249,12 +232,10 @@ BEGIN;
 		INNER JOIN empleado 
 			ON empleado.nombre_empleado = registro.nombre_empleado 
 			AND empleado.apellido_empleado = registro.apellido_empleado
-		INNER JOIN copia_pelicula 
-			ON copia_pelicula.pelicula = id_pelicula 
-			AND copia_pelicula.tienda = id_tienda
 		INNER JOIN renta_pelicula 
 			ON renta_pelicula.cliente_renta = id_cliente
-			AND renta_pelicula.copia_pelicula_renta = id_copia_pelicula
+			AND renta_pelicula.tienda_renta = id_tienda
+			AND renta_pelicula.pelicula_renta = id_pelicula
 			AND renta_pelicula.empleado_renta = id_empleado
 			AND renta_pelicula.fecha_renta = registro.fecha_renta
 				WHERE registro.fecha_renta IS NOT null
